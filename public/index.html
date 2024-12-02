@@ -1,61 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My ChatRoom</title>
-    <link rel="stylesheet" href="/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
     <div class="container">
-        <h1>My ChatRoom</h1>
-        <form id="chatForm">
-            <input type="text" placeholder="Your Name" id="username" required>
-            <input type="text" placeholder="Your Message" id="message" required>
-            <button type="submit">Send</button>
-        </form>
-        <div id="chatArea"></div>
+      <h1>My ChatRoom</h1>
+      <form id="chatForm">
+        <input type="text" placeholder="Your Name" id="username" required />
+        <input type="text" placeholder="Your Message" id="message" required />
+        <button type="submit">Send</button>
+      </form>
+      <div id="chatArea"></div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://chatroom-app.vercel.app/socket.io/socket.io.js"></script>
+
     <script>
-        const socket = io();
+      const socket = io();
 
-        const form = document.getElementById('chatForm');
-        const usernameInput = document.getElementById('username');
-        const messageInput = document.getElementById('message');
-        const chatArea = document.getElementById('chatArea');
+      const form = document.getElementById("chatForm");
+      const usernameInput = document.getElementById("username");
+      const messageInput = document.getElementById("message");
+      const chatArea = document.getElementById("chatArea");
 
-       
-        const savedUsername = localStorage.getItem("my-user-name");
-        if (savedUsername) {
-            usernameInput.value = savedUsername; 
-            usernameInput.disabled = true; 
+      const savedUsername = localStorage.getItem("my-user-name");
+      if (savedUsername) {
+        usernameInput.value = savedUsername;
+        usernameInput.disabled = true;
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (!savedUsername && usernameInput.value.trim()) {
+          localStorage.setItem("my-user-name", usernameInput.value.trim());
+          usernameInput.disabled = true;
         }
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+        const username = usernameInput.value.trim();
+        const message = messageInput.value.trim();
 
-            
-            if (!savedUsername && usernameInput.value.trim()) {
-                localStorage.setItem("my-user-name", usernameInput.value.trim());
-                usernameInput.disabled = true;
-            }
+        if (username && message) {
+          socket.emit("chatMessage", { username, message });
+          messageInput.value = "";
+        }
+      });
 
-            const username = usernameInput.value.trim();
-            const message = messageInput.value.trim();
-
-            if (username && message) {
-                socket.emit('chatMessage', { username, message });
-                messageInput.value = ''; 
-            }
-        });
-
-        socket.on('chatMessage', ({ username, message }) => {
-            const messageElement = document.createElement('p');
-            messageElement.innerHTML = `<strong>${username}:</strong> ${message}`;
-            chatArea.appendChild(messageElement);
-        });
+      socket.on("chatMessage", ({ username, message }) => {
+        const messageElement = document.createElement("p");
+        messageElement.innerHTML = `<strong>${username}:</strong> ${message}`;
+        chatArea.appendChild(messageElement);
+      });
     </script>
-</body>
+  </body>
 </html>
