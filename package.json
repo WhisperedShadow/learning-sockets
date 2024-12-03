@@ -8,9 +8,10 @@
   "keywords": [],
   "author": "Eren Yeager",
   "license": "ISC",
-  "description": "",
+  "description": "A simple chat application using Express and Socket.IO.",
   "dependencies": {
     "express": "^4.21.1",
+    "learning-sockets": "file:",
     "socket.io": "^4.8.1"
   }
 }
